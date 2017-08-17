@@ -23,7 +23,7 @@
 
 - name: Install last version
   file:
-    src: "/opt/convoy-v{{ docker_convoy_version }}"
+    src: "/opt/convoy-v{{ docker_convoy_version }}/convoy/{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
     state: link
     owner: root
