@@ -1,0 +1,4 @@
+---
+# defaults vars file for current role
+docker_convoy_version: '0.5.0'
+# vim:ft=ansible:

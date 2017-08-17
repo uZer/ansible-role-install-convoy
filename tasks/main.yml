@@ -1,0 +1,55 @@
+---
+- name: Create version folder
+  file:
+    state: directory
+    path: '/opt/convoy-v{{ docker_convoy_version }}'
+  become: yes
+  tags:
+    - docker
+    - convoy
+
+- name: Download convoy plugin
+  unarchive:
+    src: "https://github.com/rancher/convoy/releases/download/v{{ docker_convoy_version }}/convoy.tar.gz"
+    remote_src: yes
+    dest: "/opt/convoy-v{{ docker_convoy_version }}"
+    owner: root
+    group: root
+    creates: "/opt/convoy-v{{ docker_convoy_version }}/convoy"
+  become: yes
+  tags:
+    - docker
+    - convoy
+
+- name: Install last version
+  file:
+    src: "/opt/convoy-v{{ docker_convoy_version }}"
+    dest: "/usr/local/bin/{{ item }}"
+    state: link
+    owner: root
+    group: root
+  become: yes
+  with_items:
+    - "convoy"
+    - "convoy-pdata_tools"
+  tags:
+    - docker
+    - convoy
+
+- name: Create docker plugin
+  lineinfile:
+    path: '/etc/docker/plugins/convoy.spec'
+    regexp: '^unix:///var/run/convoy/convoy.sock$'
+    line: 'unix:///var/run/convoy/convoy.sock'
+    create: yes
+    owner: root
+    group: root
+  become: yes
+  with_items:
+    - "convoy"
+    - "convoy-pdata_tools"
+  tags:
+    - docker
+    - convoy
+
+# vim:ft=ansible:
