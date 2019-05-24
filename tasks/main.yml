@@ -23,8 +23,8 @@
 
 - name: Install last version
   file:
-    src: "/opt/convoy-v{{ docker_convoy_version }}/convoy/{{ item }}"
-    dest: "{{ docker_convoy_bindir }}/{{ item }}"
+    src: "/opt/convoy-v{{ docker_convoy_version }}/convoy/{{item}}"
+    dest: "{{docker_convoy_bindir}}/{{ item }}"
     state: link
     owner: root
     group: root
@@ -51,5 +51,48 @@
   tags:
     - docker
     - convoy
+
+- name: Copy convoy daemon start script
+  copy:
+    src: convoy-backup.py
+    dest: "{{docker_convoy_bindir}}/"
+    mode: 0744
+  tags:
+    - convoy
+  become: true
+
+- name: Copy convoy daemon start script
+  copy:
+    src: convoy-start.sh
+    dest: "{{docker_convoy_bindir}}/"
+    mode: 0744
+  tags:
+    - convoy
+  become: true
+
+- name: Copy convoy daemon service
+  copy:
+    src: convoy.service
+    dest: /etc/systemd/system
+    mode: 0644
+  tags:
+    - convoy
+  become: true
+
+- name: Start convoy dameon
+  command: systemctl daemon-reload
+  tags:
+    - convoy
+  become: true
+
+- name: Ensure the Convoy service is running
+  service:
+    name=convoy.service
+    state=started
+    enabled=yes
+  tags:
+    - docker
+    - convoy
+  become: true
 
 # vim:ft=ansible:
