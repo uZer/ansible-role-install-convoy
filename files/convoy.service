@@ -1,0 +1,10 @@
+
+[Unit]
+Description=Convoy Docker Volume Plugin
+After=docker.service
+
+[Service]
+ExecStart=/opt/bin/convoy-start.sh
+
+[Install]
+WantedBy=default.target
